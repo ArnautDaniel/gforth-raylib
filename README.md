@@ -1,8 +1,5 @@
 # gforth-raylib
-Raylib 3.0 bindings for Gforth.  The name is backwards for obvious reasons.
+Raylib 3.0 bindings for Gforth.  
+![gforth-raylib logo](https://github.com/ArnautDaniel/gforth-raylib/raw/master/logo.png "Gforth-Raylib Logo")
 
-No change in the names of raylib functions -> forth words. 
-
-Will write up more soon and do some more examples.
-
-Bindings should be complete.
+More (and better) examples coming soon.
