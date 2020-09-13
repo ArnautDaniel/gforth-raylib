@@ -27,8 +27,8 @@ require raylib3.fs
 \ -----------------------------------------------------------
 
 \ raycall will allocate a structure of the type it is sent
-\ and sends this empty structure along with the function call
-\ the function will "fill up" the structure and return a pointer
+\ and sends this empty structure along with the function call.
+\ The function will "fill up" the structure and return a pointer
 \ instead of the structure as it does in the original raylib.
 \ This is because Gforth can't return structures.
 
@@ -37,7 +37,7 @@ require raylib3.fs
 \ with this method.  (Which is fine because you have the addr
 \ to free.)
 
-\ This is trying to be an unopinionated as possible
+\ This is trying to be as unopinionated as possible
 \ so you can implement your own way of doing things.
 
 \ if you need to see the what the return type of the word is
