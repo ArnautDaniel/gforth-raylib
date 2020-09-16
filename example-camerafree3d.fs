@@ -5,23 +5,26 @@ include raylib3.fs
 
 800 Constant screenWidth
 450 Constant screenHeight
-Camera3D allocate drop Value exCamera
+Camera3D allocate throw Value exCamera
 
 : example-init ( -- )
   screenWidth screenHeight
   s" raylib [core] example - 3d camera free"
   InitWindow ;
 
-: toCamera ( Vector3 Camera -- )
-    { Vec3 Cam }
-    Vec3 Vector3>
-    Cam Vector3-z sf!
-    Cam Vector3-y sf!
-    Cam Vector3-x sf! ;
+: to-camera-vector ( x y z camera -- )
+    { cam }
+    cam Vector3-z sf!
+    cam Vector3-y sf!
+    cam Vector3-x sf! ;
 
-10.0e 10.0e 10.0e >Vector3 Value position
-0.0e 0.0e 0.0e >Vector3 Value target
-0.0e 1.0e 0.0e >Vector3 Value up
+: tocamera ( Vector3 Camera -- )
+    swap Vector3> to-camera-vector ;
+    
+: make-camera ( x1 y1 z1 x2 y2 z2 x3 y3 z3 fovy type -- ) ;
+10.0e 10.0e 10.0e	>Vector3 Value position
+0.0e 0.0e 0.0e		>Vector3 Value target
+0.0e 1.0e 0.0e		>Vector3 Value up
 45.0e fvalue fovy
 
 : example-init-camera ( -- )
