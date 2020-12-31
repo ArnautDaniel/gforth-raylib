@@ -51,6 +51,9 @@ require raylib3.fs
 : raycall ( xt type -- addr )
     allocate throw swap execute ;
 
+: GetMonitorPosition ( #monitor -- vec2 )
+    ['] iGetMonitorPosition Vector2 raycall ;
+
 : GetWindowPosition ( -- vec2  )
     ['] iGetWindowPosition Vector2 raycall ;
 
@@ -200,6 +203,9 @@ require raylib3.fs
 : loadfontfromimage ( image color-key firstchar -- font )
     ['] iloadfontfromimage font raycall ;
 
+: loadfontfrommemory ( fileData dataSize fontSize fontChars charCount )
+    ['] iloadfontfrommemory font raycall ;
+
 : genimagefontatlas ( CharInfo*chars Rectangle**recs charscount fontsize padding packmethod -- image )
     ['] igenimagefontatlas image raycall ;
 
@@ -281,7 +287,7 @@ require raylib3.fs
 : getmatrixprojection ( -- matrix )
     ['] igetmatrixprojection matrix raycall ;
 
-: gentexturecubemap ( shader texture2d-map size -- texture2d )
+: gentexturecubemap ( shader texture2d-map size format -- texture2d )
     ['] igentexturecubemap texture2d raycall ;
 
 : gentextureirradiance ( shader texture2d-cubemap size -- texture2d )
@@ -310,3 +316,6 @@ require raylib3.fs
 
 : initaudiostream ( u-samplerate u-samplesize u-channels -- audiostream )
     ['] iinitaudiostream audiostream raycall ;
+
+: loadwavefrommemory ( filetype filedata datasize wave -- wave )
+    ['] iloadwavefrommemory wave raycall ;

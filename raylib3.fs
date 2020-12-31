@@ -396,8 +396,7 @@ begin-structure RenderTexture2D
 	drop 0 4 +field RenderTexture2D-id
 	drop 4 20 +field RenderTexture2D-texture
 	drop 24 20 +field RenderTexture2D-depth
-	drop 44 1 +field RenderTexture2D-depthTexture
-drop 48 end-structure
+drop 44 end-structure
 \ NPatchInfo
 begin-structure NPatchInfo
 	drop 16 4 +field NPatchInfo-left
@@ -418,9 +417,10 @@ drop 40 end-structure
 \ Font
 begin-structure Font
 	drop 0 4 +field Font-baseSize
+	drop 8 4 +field Font-charspadding
 	drop 32 8 +field Font-recs
 	drop 4 4 +field Font-charsCount
-	drop 8 20 +field Font-texture
+	drop 12 20 +field Font-texture
 	drop 40 8 +field Font-chars
 drop 48 end-structure
 \ Camera3D
@@ -567,6 +567,9 @@ drop 64 end-structure
 c-function InitWindow InitWindow n n s -- void	( width height title -- )
 c-function WindowShouldClose WindowShouldClose  -- n	( -- )
 c-function CloseWindow CloseWindow  -- void	( -- )
+c-function IsWindowState IsWindowState n -- n ( flags -- bool )
+c-function SetWindowState SetWindowState n -- void ( flags -- )
+c-function ClearWindowState ClearWindowState n -- void ( flags -- )
 c-function IsWindowReady IsWindowReady  -- n	( -- )
 c-function IsWindowMinimized IsWindowMinimized  -- n	( -- )
 c-function IsWindowMaximized IsWindowMaximized  -- n	( -- )
@@ -575,10 +578,6 @@ c-function IsWindowResized IsWindowResized  -- n	( -- )
 c-function IsWindowHidden IsWindowHidden  -- n	( -- )
 c-function IsWindowFullscreen IsWindowFullscreen  -- n	( -- )
 c-function ToggleFullscreen ToggleFullscreen  -- void	( -- )
-c-function UnhideWindow UnhideWindow  -- void	( -- )
-c-function HideWindow HideWindow  -- void	( -- )
-c-function DecorateWindow DecorateWindow  -- void	( -- )
-c-function UndecorateWindow UndecorateWindow  -- void	( -- )
 c-function MaximizeWindow MaximizeWindow  -- void	( -- )
 c-function RestoreWindow RestoreWindow  -- void	( -- )
 c-function SetWindowIcon SetWindowIcon a{*(Image*)} -- void	( image -- )
@@ -598,6 +597,11 @@ c-function GetMonitorPhysicalHeight GetMonitorPhysicalHeight n -- n	( monitor --
 c-function GetMonitorRefreshRate GetMonitorRefreshRate n -- n	( monitor -- )
 
 \ Wrapping
+
+\c Vector2 * iGetMonitorPosition(int monitor, Vector2 * p){
+\c Vector2 v = GetMonitorPosition(monitor);
+\c *p = v; return p; }
+c-function iGetMonitorPosition iGetMonitorPosition n a -- a ( emptyVector2 -- Vector2 )
 
 \c Vector2 * iGetWindowPosition(Vector2 * p){
 \c Vector2 v = GetWindowPosition();
@@ -678,6 +682,11 @@ c-function iGetScreenToWorld2D iGetScreenToWorld2D a{*(Vector2*)} a{*(Camera2D*)
 \ --------------------------------------------------------
 \ ------------------End Custom Defines--------------------
 
+\ MemAlloc and MemFree look new in 3.5.  I'm going to leave them undefined for now, since Forth
+\ should already be handling this.
+\ RLAPI void MemFree(void *ptr);        // Internal memory free
+\ RLAPI void *MemAlloc(int size);       // Internal memory allocator
+
 c-function SetTargetFPS SetTargetFPS n -- void	( fps -- )
 c-function GetFPS GetFPS  -- n	( -- )
 c-function GetFrameTime GetFrameTime  -- r	( -- )
@@ -696,7 +705,7 @@ c-function SaveFileText SaveFileText s a -- void	( fileName text -- )
 c-function FileExists FileExists s -- n	( fileName -- )
 c-function IsFileExtension IsFileExtension s s -- n	( fileName ext -- )
 c-function DirectoryExists DirectoryExists s -- n	( dirPath -- )
-c-function GetExtension GetExtension s -- s	( fileName -- )
+c-function GetFileExtension GetFileExtension s -- s	( fileName -- )
 c-function GetFileName GetFileName s -- s	( filePath -- )
 c-function GetFileNameWithoutExt GetFileNameWithoutExt s -- s	( filePath -- )
 c-function GetDirectoryPath GetDirectoryPath s -- s	( filePath -- )
@@ -714,12 +723,16 @@ c-function DecompressData DecompressData a n a -- a	( compData compDataLength da
 c-function SaveStorageValue SaveStorageValue u n -- void	( position value -- )
 c-function LoadStorageValue LoadStorageValue u -- n	( position -- )
 c-function OpenURL OpenURL s -- void	( url -- )
+
+\  Input Handling Functions (Module: core)
+
 c-function IsKeyPressed IsKeyPressed n -- n	( key -- )
 c-function IsKeyDown IsKeyDown n -- n	( key -- key )
 c-function IsKeyReleased IsKeyReleased n -- n	( key -- )
 c-function IsKeyUp IsKeyUp n -- n	( key -- )
 c-function SetExitKey SetExitKey n -- void	( key -- )
 c-function GetKeyPressed GetKeyPressed  -- n	( -- )
+c-function GetCharPressed GetCharPressed -- n   ( -- )
 c-function IsGamepadAvailable IsGamepadAvailable n -- n	( gamepad -- )
 c-function IsGamepadName IsGamepadName n s -- n	( gamepad name -- )
 c-function GetGamepadName GetGamepadName n -- s	( gamepad -- )
@@ -783,6 +796,9 @@ c-function SetCameraPanControl SetCameraPanControl n -- void	( panKey -- )
 c-function SetCameraAltControl SetCameraAltControl n -- void	( altKey -- )
 c-function SetCameraSmoothZoomControl SetCameraSmoothZoomControl n -- void	( szKey -- )
 c-function SetCameraMoveControls SetCameraMoveControls n n n n n n -- void	( frontKey backKey rightKey leftKey upKey downKey -- )
+
+\ Basic Shapes Drawing Functions ( Module: shapes )
+
 c-function DrawPixel DrawPixel n n a{*(Color*)} -- void	( posX posY color -- )
 c-function DrawPixelV DrawPixelV a{*(Vector2*)} a{*(Color*)} -- void	( position color -- )
 c-function DrawLine DrawLine n n n n a{*(Color*)} -- void	( startPosX startPosY endPosX endPosY color -- )
@@ -817,6 +833,8 @@ c-function DrawTriangleFan DrawTriangleFan a n a{*(Color*)} -- void	( points num
 c-function DrawTriangleStrip DrawTriangleStrip a n a{*(Color*)} -- void	( points pointsCount color -- )
 c-function DrawPoly DrawPoly a{*(Vector2*)} n r r a{*(Color*)} -- void	( center sides radius rotation color -- )
 c-function DrawPolyLines DrawPolyLines a{*(Vector2*)} n r r a{*(Color*)} -- void	( center sides radius rotation color -- )
+
+\ Basic shapes collision detection functions
 c-function CheckCollisionRecs CheckCollisionRecs a{*(Rectangle*)} a{*(Rectangle*)} -- n	( rec1 rec2 -- )
 c-function CheckCollisionCircles CheckCollisionCircles a{*(Vector2*)} r a{*(Vector2*)} r -- n	( center1 radius1 center2 radius2 -- )
 c-function CheckCollisionCircleRec CheckCollisionCircleRec a{*(Vector2*)} r a{*(Rectangle*)} -- n	( center radius rec -- )
@@ -847,6 +865,13 @@ c-function iLoadImageRaw iLoadImageRaw s n n n n a -- a	( fileName width height 
 \c *img = imga; return img; }
 
 c-function iLoadImageAnim iLoadImageAnim s a a -- a	( fileName frames image -- image )
+
+\c Image* iLoadImageFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, Image* img){
+\c Image imga = LoadImageFromMemory(fileType, fileData, dataSize);
+\c *img = imga; return img; }
+
+c-function iLoadImageFromMemory iLoadImageFromMemory s a n a -- a ( fileType fileData dataSize image -- image )
+
 c-function UnloadImage UnloadImage a{*(Image*)} -- void	( image -- )
 c-function ExportImage ExportImage a{*(Image*)} s -- void	( image fileName -- )
 c-function ExportImageAsCode ExportImageAsCode a{*(Image*)} s -- void	( image fileName -- )
@@ -945,9 +970,8 @@ c-function ImageColorGrayscale ImageColorGrayscale a -- void	( image -- )
 c-function ImageColorContrast ImageColorContrast a r -- void	( image contrast -- )
 c-function ImageColorBrightness ImageColorBrightness a n -- void	( image brightness -- )
 c-function ImageColorReplace ImageColorReplace a a{*(Color*)} a{*(Color*)} -- void	( image color replace -- )
-c-function GetImageData GetImageData a{*(Image*)} -- a	( image -- )
-c-function GetImagePalette GetImagePalette a{*(Image*)} n a -- a	( image maxPaletteSize extractCount -- )
-c-function GetImageDataNormalized GetImageDataNormalized a{*(Image*)} -- a	( image -- )
+c-function LoadImageColors LoadImageColors a{*(Image*)} -- a	( image -- )
+c-function LoadImagePalette LoadImagePalette a{*(Image*)} n a -- a	( image maxPaletteSize extractCount -- )
 
 \c Rectangle* iGetImageAlphaBorder(Image image, float threshold, Rectangle* rec){
 \c Rectangle reca = GetImageAlphaBorder(image, threshold);
@@ -1103,13 +1127,21 @@ c-function iLoadFontEx iLoadFontEx s n a n a -- a ( fileName fontSize fontChars 
 \c *fon = fona; return fon; }
 
 c-function iLoadFontFromImage iLoadFontFromImage a{*(Image*)} a{*(Color*)} n a -- a ( image key firstChar font -- font )
-c-function LoadFontData LoadFontData s n a n n -- a	( fileName fontSize fontChars charsCount type -- )
+
+\c Font* iLoadFontFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, int fontSize, int *fontChars, int charsCount, Font* fon){
+\c Font fona = LoadFontFromMemory(fileType, fileData, dataSize, fontSize, fontChars, charsCount);
+\c *fon = fona; return fon; }
+
+c-function iLoadFontFromMemory iLoadFontFromMemory s s n n a n a -- a ( fileData dataSize fontSize fontChars charCount Font -- font )
+
+c-function LoadFontData LoadFontData s n n a n n -- a	( fileName dataSize fontSize fontChars charsCount type -- )
 
 \c Image* iGenImageFontAtlas(const CharInfo* chars, Rectangle** recs, int charsCount, int fontSize, int padding, int packMethod, Image* img){
 \c Image imga = GenImageFontAtlas(chars, recs, charsCount, fontSize, padding, packMethod);
 \c *img = imga; return img; }
 
-c-function iGenImageFontAtlas iGenImageFontAtlas a a n n n n a -- a ( chars recs charsCount fontSize padding packMethod image -- image )
+c-function iGenImageFontAtlas iGenImageFontAtlas a a n n n n a -- a ( chars recs charsCount fontSize padding packMethod image -- image 
+c-function UnloadFontData UnloadFontData a n -- ( chars charscount -- )
 c-function UnloadFont UnloadFont a{*(Font*)} -- void	( font -- )
 c-function DrawFPS DrawFPS n n -- void	( posX posY -- )
 c-function DrawText DrawText s n n n a{*(Color*)} -- void	( text posX posY fontSize color -- )
@@ -1177,6 +1209,7 @@ c-function iLoadModel iLoadModel s a -- a ( fileName model -- model )
 
 c-function iLoadModelFromMesh iLoadModelFromMesh a{*(Mesh*)} a -- a ( mesh model -- model )
 c-function UnloadModel UnloadModel a{*(Model*)} -- void	( model -- )
+c-function UnloadModelKeepMeshes UnloadModelKeepMeshes a{*(Model*)} -- void ( model -- )
 c-function LoadMeshes LoadMeshes s a -- a	( fileName meshCount -- )
 c-function ExportMesh ExportMesh a{*(Mesh*)} s -- void	( mesh fileName -- )
 c-function UnloadMesh UnloadMesh a{*(Mesh*)} -- void	( mesh -- )
@@ -1352,11 +1385,11 @@ c-function iGetMatrixModelview iGetMatrixModelview  a -- a ( matrix -- matrix )
 
 c-function iGetMatrixProjection iGetMatrixProjection  a -- a ( matrix -- matrix )
 
-\c Texture2D* iGenTextureCubemap(Shader shader, Texture2D map, int size, Texture2D* tex){
-\c Texture2D texa = GenTextureCubemap(shader, map, size);
+\c Texture2D* iGenTextureCubemap(Shader shader, Texture2D map, int size, int format, Texture2D* tex){
+\c Texture2D texa = GenTextureCubemap(shader, map, size, format);
 \c *tex = texa; return tex; }
 
-c-function iGenTextureCubemap iGenTextureCubemap a{*(Shader*)} a{*(Texture2D*)} n a -- a ( shader map size texture -- texture )
+c-function iGenTextureCubemap iGenTextureCubemap a{*(Shader*)} a{*(Texture2D*)} n n a -- a ( shader map size format texture -- texture )
 
 \c Texture2D* iGenTextureIrradiance(Shader shader, Texture2D cubemap, int size, Texture2D* tex){
 \c Texture2D texa = GenTextureIrradiance(shader, cubemap, size);
@@ -1398,6 +1431,12 @@ c-function SetMasterVolume SetMasterVolume r -- void	( volume -- )
 
 c-function iLoadWave iLoadWave s a -- a ( fileName wave -- wave )
 
+\c Wave* iLoadWaveFromMemory(const char *fileType, const unsigned char *fileData, int dataSize, Wave* wav){
+\c Wave wava = LoadWaveFromMemory(fileType, fileData, dataSize);
+\c *wav = wava; return wav; }
+
+c-function iLoadWaveFromMemory iLoadWaveFromMemory s s n a -- a ( fileType fileData dataSize wave -- wave )
+
 \c Sound* iLoadSound (const char* fileName, Sound* son){
 \c Sound sona = LoadSound(fileName);
 \c *son = sona; return son; }
@@ -1432,7 +1471,7 @@ c-function WaveFormat WaveFormat a n n n -- void	( wave sampleRate sampleSize ch
 
 c-function iWaveCopy iWaveCopy a{*(Wave*)} a -- a ( wave wave -- wave )
 c-function WaveCrop WaveCrop a n n -- void	( wave initSample finalSample -- )
-c-function GetWaveData GetWaveData a{*(Wave*)} -- a	( wave -- )
+c-function LoadWaveSamples LoadWaveSamples a{*(Wave*)} -- a	( wave -- )
 
 \c Music* iLoadMusicStream(const char* fileName, Music* mus){
 \c Music musa = LoadMusicStream(fileName);
