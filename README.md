@@ -15,3 +15,6 @@ sudo make install RAYLIB_LIBTYPE=SHARED
 
 Check https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux for more details.
 
+# projects
+
+BearBit:  An overlay for Gforth-Raylib that gives a simple fantasy console for making old 8-bit esque style games.
