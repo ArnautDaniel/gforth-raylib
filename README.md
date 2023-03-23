@@ -1,6 +1,8 @@
 # gforth-raylib
 
-### 4.0 Bindings in Progress using the new parser.
+### 4.5 Bindings in Progress using the new parser.
+
+Yeah I'm gonna try eventually to update these...3.5 is still really good for gforth.
 
 Raylib 3.5 bindings for Gforth.  
 ![gforth-raylib logo](https://github.com/ArnautDaniel/gforth-raylib/raw/master/logo.png "Gforth-Raylib Logo")
